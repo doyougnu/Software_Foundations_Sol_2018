@@ -72,7 +72,7 @@ Proof. simpl. reflexivity. Qed.
 (* Some exercises *)
 
 (* Why doesn't this work? *)
-(* Notation "¬x" := (negb x). *)
+(* Notation "¬ x" := (negb x). *)
 
 (* Definition nandb (a:bool) (b:bool) : bool = ¬(a && b) *)
 Definition nandb (a:bool) (b:bool) : bool := (negb (andb a b)).
@@ -216,7 +216,7 @@ Fixpoint plus (n:nat) (m:nat) : nat :=
   end.
 
 (* check the plus function *)
-Check (plus 3 2).
+Compute (plus 3 2).
 
 (* This is the simplification that happens for plus *)
 (*  plus (S (S (S O))) (S (S O))
@@ -381,3 +381,173 @@ Proof.
   rewrite -> H.
   (* and we can  *)
   reflexivity. Qed.
+
+(****************************** Case **************************************)
+Theorem plus_1_neq_0_firsttry : forall n : nat,
+  beq_nat (n + 1) 0 = false.
+Proof.
+  intros n.
+  simpl. (* does nothing! *)
+Abort.
+
+Theorem plus_1_neq_0 : forall n : nat,
+  beq_nat (n + 1) 0 = false.
+Proof.
+  intros n. destruct n as [| n'].
+  - reflexivity.
+  - reflexivity. Qed.
+
+Theorem negb_involutive : forall b : bool,
+  negb (negb b) = b.
+Proof.
+  intros b. destruct b.
+  - reflexivity.
+  - reflexivity. Qed.
+
+ Theorem andb_commutative : forall b c, andb b c = andb c b.
+Proof.
+  intros b c. destruct b.
+  - destruct c.
+    + reflexivity.
+    + reflexivity.
+  - destruct c.
+    + reflexivity.
+    + reflexivity.
+Qed.
+
+Theorem andb_commutative' : forall b c, andb b c = andb c b.
+Proof.
+  intros b c. destruct b.
+  { destruct c.
+    { reflexivity. }
+    { reflexivity. } }
+  { destruct c.
+    { reflexivity. }
+    { reflexivity. } }
+Qed.
+
+Theorem plus_1_neq_0' : forall n : nat,
+  beq_nat (n + 1) 0 = false.
+Proof.
+  intros [|n].
+  - reflexivity.
+  - reflexivity. Qed.
+
+Theorem andb_commutative'' :
+  forall b c, andb b c = andb c b.
+Proof.
+  intros [] [].
+  - reflexivity.
+  - reflexivity.
+  - reflexivity.
+  - reflexivity.
+Qed.
+
+(****************************** Exercises **************************************)
+(* There must be a cleaner way to write this than the direct case enum *)
+Theorem andb_true_elim2 : forall b c : bool,
+  andb b c = true -> c = true.
+Proof.
+  intros b c. destruct b.
+  - destruct c.
+    + reflexivity.
+    + intros H.
+      rewrite <- H.
+      simpl.
+      reflexivity.
+ - destruct c.
+   + reflexivity.
+   + intros H.
+     rewrite <- H.
+     simpl. reflexivity.
+     Qed.
+
+Theorem zero_nbeq_plus_1 : forall n : nat,
+  beq_nat 0 (n + 1) = false.
+Proof.
+  intros [].
+  - simpl. reflexivity.
+  - simpl. reflexivity.
+
+(* Fixpoint plus' (n : nat) (m : nat) : nat := *)
+(*   match n, m with *)
+(*   | O, O => O *)
+(*   | S n' , O => S (plus' n' O) *)
+(*   | O, S m' => S (plus' O m') *)
+(*   | S n', S m' => S (plus' n' m') *)
+(*   end. *)
+
+
+(****************************** More Exercises *********************************)
+Theorem identity_fn_applied_twice :
+  forall (f : bool -> bool), (forall (x : bool), f x = x) -> forall (b : bool), f (f b) = b.
+Proof.
+  intros f H b.
+  rewrite -> H.
+  rewrite -> H.
+  reflexivity.
+Qed.
+
+Theorem negation_fn_applied_twice :
+  forall (f : bool -> bool), (forall (x : bool), f x = negb x) -> forall (b : bool), f (f b) = b.
+Proof.
+  intros f H [].
+  - rewrite -> H.
+    rewrite -> H.
+    simpl. reflexivity.
+  - rewrite ->  H.
+    rewrite -> H.
+    simpl. reflexivity.
+Qed.
+
+Lemma  eq_commutative : forall (a b : bool), (a = b -> b = a).
+  Proof.
+    intros [] [].
+    - reflexivity.
+    - intros H. rewrite -> H. reflexivity.
+    - intros H. rewrite -> H. reflexivity.
+    - reflexivity.
+Qed.
+
+Theorem andb_eq_orb :
+  forall (b c : bool), (andb b c = orb b c) -> b = c.
+Proof.
+  intros b c.
+  destruct b.
+  - simpl. intros H. rewrite -> H. reflexivity.
+  - simpl. intros H. rewrite -> H. reflexivity.
+Qed.
+
+(* a *)
+Inductive bin : Type :=
+| OO : bin
+| S' : bin -> bin
+| SS : bin -> bin.
+
+(* b *)
+
+(* Fixpoint mult (n m : nat) : nat := *)
+(*   match n with *)
+(*   | O => O *)
+(*   | S newN => plus m (mult newN m) *)
+(*   end. *)
+Fixpoint incr (a : bin) : bin := S' a.
+
+Fixpoint bin_to_nat (a : bin) : nat :=
+  match a with
+  | OO => O
+  | S' a' => S (bin_to_nat a')
+  | SS a' => 2 * (bin_to_nat a')
+  end.
+
+(* unary counting can still work *)
+Example test1: bin_to_nat (S' (S' (S' (S' OO)))) = 4.
+Proof. simpl. reflexivity. Qed.
+
+(* or we can do 2^2 * 1 *)
+Example test2: bin_to_nat (SS (SS (S' OO))) = 4.
+Proof. simpl. reflexivity. Qed.
+
+(* just checking that 2^10 = 1024 *)
+Example test3: bin_to_nat (SS (SS (SS (SS (SS (SS (SS (SS (SS (SS (S' OO))))))))))) = 1024.
+Proof. simpl. reflexivity. Qed.
