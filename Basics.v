@@ -20,6 +20,7 @@ Inductive day : Type :=
 
 Example test_next_weekday:
   (next_weekday (next_weekday saturday)) = tuesday.
+Proof. simpl. reflexivity. Qed.
 
 (******************************* Booleans **************************************)
 
@@ -140,7 +141,6 @@ Definition isred (c : color) : bool :=
 
 (******************************* Numbers ***************************************)
 
-Abort All.
 Module NatPlayground.
 
 (* Peano Axioms *)
@@ -383,12 +383,12 @@ Proof.
   reflexivity. Qed.
 
 (****************************** Case **************************************)
-Theorem plus_1_neq_0_firsttry : forall n : nat,
-  beq_nat (n + 1) 0 = false.
-Proof.
-  intros n.
-  simpl. (* does nothing! *)
-Abort.
+(* Theorem plus_1_neq_0_firsttry : forall n : nat, *)
+(*   beq_nat (n + 1) 0 = false. *)
+(* Proof. *)
+(*   intros n. *)
+(*   simpl. (* does nothing! *) *)
+(* Abort. *)
 
 Theorem plus_1_neq_0 : forall n : nat,
   beq_nat (n + 1) 0 = false.
@@ -468,6 +468,7 @@ Proof.
   intros [].
   - simpl. reflexivity.
   - simpl. reflexivity.
+Qed.
 
 (* Fixpoint plus' (n : nat) (m : nat) : nat := *)
 (*   match n, m with *)
