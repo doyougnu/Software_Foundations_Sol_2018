@@ -16,6 +16,7 @@ Proof.
   intros n. induction n as [| n' IHn'].
   - simpl. reflexivity.
   - simpl. rewrite -> IHn'. reflexivity.
+Qed.
 
 
 Theorem plus_n_Sm : forall n m : nat,
@@ -24,6 +25,7 @@ Proof.
   intros n m. induction n as [| n' IHn'].
   - simpl. reflexivity.
   - simpl. rewrite -> IHn'. reflexivity.
+Qed.
 
 Theorem plus_comm : forall n m : nat,
   n + m = m + n.
@@ -63,3 +65,34 @@ Proof.
   - simpl. reflexivity.
   - rewrite -> IHn'. simpl. rewrite -> negb_involutive. reflexivity.
 Qed.
+
+(******************************* Proof within Proofs ***************************)
+
+(* why can't rewrite recur down the tree? *)
+Theorem plus_rearrange_firsttry : forall n m p q : nat,
+  (n + m) + (p + q) = (m + n) + (p + q).
+Proof.
+  intros n m p q.
+  (* We just need to swap (n + m) for (m + n)... seems
+     like plus_comm should do the trick! *)
+  rewrite -> plus_comm.
+  (* Doesn't work...Coq rewrote the wrong plus! *)
+Abort.
+
+Theorem plus_rearrange : forall n m p q : nat,
+  (n + m) + (p + q) = (m + n) + (p + q).
+Proof.
+  intros n m p q.
+  assert (H: n + m = m + n).
+  { rewrite -> plus_comm. reflexivity. }
+  rewrite -> H. reflexivity. Qed.
+
+(************************* Formal vs Informal Proofs ***************************)
+Theorem plus_assoc'' : forall n m p : nat,
+  n + (m + p) = (n + m) + p.
+Proof.
+  intros n m p. induction n as [| n' IHn'].
+  - (* n = 0 *)
+    reflexivity.
+  - (* n = S n' *)
+    simpl. rewrite -> IHn'. reflexivity. Qed.
