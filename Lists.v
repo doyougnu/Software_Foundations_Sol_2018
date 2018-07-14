@@ -3,6 +3,15 @@
 Require Export Induction.
 Module NatList.
 
+(* Problem examples *)
+(* filterList in terms of a fold does not satisfy any proofs *)
+(* but in terms of pattern matching it does *)
+(* Coq could not determine that subset was reducing in size when in a fold *)
+(* nonzeros when expressed with a filter became hard to prove *)
+(* same with remove decrease count, if count is expressed via a fold it becomes very hard to prove. *)
+
+
+
 (* ################################################################# *)
 (** * Pairs of Numbers *)
 
@@ -274,6 +283,7 @@ Definition mapList (f : nat -> nat) (l : natlist) : natlist :=
   in
   foldList myf [] l.
 
+
 (* Why doesn't this work? *)
 Definition filterList' (f : nat -> bool) (l : natlist) : natlist :=
   let
@@ -437,7 +447,7 @@ Proof. simpl. reflexivity. Qed.
 
 (* again, what is wrong with the fold definition *)
 Definition member' (v:nat) (s:bag) : bool :=
-  foldList (fun acc n => beq_nat n v && acc) true s.
+  foldList (fun acc n => beq_nat n v || acc) false s.
 
 Definition isNil (l :natlist) : bool :=
   match l with
@@ -502,7 +512,7 @@ Proof. simpl. reflexivity. Qed.
 (* damn, coq cannot determine the decreasing terms *)
 (* Fixpoint subset' (s1:bag) (s2:bag) : bool := *)
 (*   foldList (fun acc a => *)
-(*               member a s2 && subset' (remove_one a s1) (remove_one a s2)) true s1. *)
+(*               member a s2 && subset' (tl s1) (tl s2)) true s1. *)
 
 Fixpoint subset (s1:bag) (s2:bag) : bool :=
   match s1 with

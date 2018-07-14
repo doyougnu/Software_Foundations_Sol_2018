@@ -417,7 +417,9 @@ Proof.
 Lemma app_length : forall (X:Type) (l1 l2 : list X),
   length (l1 ++ l2) = length l1 + length l2.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction l1 as [].
+  - simpl. reflexivity.
+  - simpl. rewrite -> IHl1. reflexivity. Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (more_poly_exercises)  *)
@@ -426,12 +428,17 @@ Proof.
 Theorem rev_app_distr: forall X (l1 l2 : list X),
   rev (l1 ++ l2) = rev l2 ++ rev l1.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction l1 as [].
+  - simpl. rewrite -> app_nil_r. reflexivity.
+  - simpl. rewrite -> IHl1, app_assoc. reflexivity. Qed.
 
 Theorem rev_involutive : forall X : Type, forall l : list X,
   rev (rev l) = l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction l as [].
+
+  - (* nil *) simpl. reflexivity.
+  - (* cons *) simpl. rewrite -> rev_app_distr, IHl. simpl. reflexivity. Qed.
 (** [] *)
 
 (* ================================================================= *)
