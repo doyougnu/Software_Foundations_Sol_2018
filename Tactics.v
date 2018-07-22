@@ -576,14 +576,19 @@ Proof.
 Theorem beq_nat_true : forall n m,
     beq_nat n m = true -> n = m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n as [].
+  - intros. induction m as [].
+    + simpl. reflexivity.
+    + inversion H.
+  - intros m H'. induction m as [].
+    + inversion H'.
+    + inversion H'. apply f_equal. apply IHn, H0. Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, advanced (beq_nat_true_informal)  *)
 (** Give a careful informal proof of [beq_nat_true], being as explicit
     as possible about quantifiers. *)
-
-(* FILL IN HERE *)
+(*no*)
 (** [] *)
 
 (** The strategy of doing fewer [intros] before an [induction] to
@@ -701,7 +706,13 @@ Theorem nth_error_after_last: forall (n : nat) (X : Type) (l : list X),
      length l = n ->
      nth_error l n = None.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. generalize dependent n. induction l as [].
+  - intros. induction n as [].
+    + reflexivity.
+    + inversion H.
+  - intros. induction n as [].
+    + simpl. inversion H.
+    + simpl. apply IHl. inversion H. reflexivity. Qed.
 (** [] *)
 
 (* ################################################################# *)
