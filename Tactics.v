@@ -173,7 +173,9 @@ Example trans_eq_exercise : forall (n m o p : nat),
      (n + p) = m ->
      (n + p) = (minustwo o).
 Proof.
-  intros. apply trans_eq with (n+p). reflexivity. Qed.
+  intros. apply trans_eq with (n+p).
+  - reflexivity.
+  - rewrite -> H0, H. reflexivity. Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -250,7 +252,8 @@ Example inversion_ex3 : forall (X : Type) (x y z : X) (l j : list X),
   y :: l = x :: j ->
   x = y.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. inversion H0. reflexivity. Qed.
+
 (** [] *)
 
 (** When used on a hypothesis involving an equality between
@@ -314,7 +317,7 @@ Example inversion_ex6 : forall (X : Type)
   y :: l = z :: j ->
   x = z.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. inversion H. Qed.
 (** [] *)
 
 (** To summarize this discussion, suppose [H] is a hypothesis in the
@@ -399,13 +402,25 @@ Proof.
 (** **** Exercise: 3 stars, recommended (plus_n_n_injective)  *)
 (** Practice using "in" variants in this proof.  (Hint: use
     [plus_n_Sm].) *)
+Lemma plus_0_n : forall m,
+    m + m = 0 -> m = 0.
+Proof.
+  intros. induction m as [].
+  - reflexivity.
+  - inversion H. Qed.
 
 Theorem plus_n_n_injective : forall n m,
      n + n = m + m ->
      n = m.
-Proof.
-  intros n. induction n as [| n'].
-  (* FILL IN HERE *) Admitted.
+Proof. intros n. induction n as [| n' x].
+   - intros m H. induction m as [|m' h].
+     + reflexivity.
+     + inversion H.
+  - intros m H. induction m as [].
+     + inversion H.
+     + inversion H. rewrite <- plus_n_Sm in H1. symmetry in H1.
+       rewrite <- plus_n_Sm in H1. inversion H1. symmetry in H2. apply x in H2.
+       rewrite ->  H2. reflexivity. Qed.
 (** [] *)
 
 (* ################################################################# *)
