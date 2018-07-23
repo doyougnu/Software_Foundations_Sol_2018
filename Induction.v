@@ -96,3 +96,41 @@ Proof.
     reflexivity.
   - (* n = S n' *)
     simpl. rewrite -> IHn'. reflexivity. Qed.
+
+Theorem plus_swap : forall n m p : nat,
+  n + (m + p) = m + (n + p).
+Proof.
+  intros n m p.
+  assert (n + p = p + n) as H.
+    rewrite plus_comm. simpl. reflexivity.
+  rewrite plus_comm.
+rewrite -> H. rewrite plus_assoc. simpl. reflexivity. Qed.
+
+Theorem mult_n_Sm : forall n m : nat,
+  n * S m = n + n * m.
+Proof.
+  intros. induction n as [].
+  - simpl. reflexivity.
+  - simpl. rewrite IHn. rewrite <- plus_swap. reflexivity. Qed.
+
+Theorem mult_comm : forall m n : nat,
+  m * n = n * m.
+Proof.
+  intros. induction n as [].
+  - simpl. apply mult_0_r.
+  - rewrite -> mult_n_Sm. simpl. rewrite -> IHn. reflexivity. Qed.
+(** [] *)
+
+Theorem mult_plus_distr_r : forall n m p : nat,
+  (n + m) * p = (n * p) + (m * p).
+Proof.
+  intros n m p. induction n as [].
+  - reflexivity.
+  - simpl. rewrite IHn. rewrite plus_assoc. reflexivity. Qed.
+
+Theorem mult_assoc : forall n m p : nat,
+  n * (m * p) = (n * m) * p.
+Proof.
+  intros n m p. induction n as [].
+  - reflexivity.
+  - simpl. rewrite IHn. rewrite mult_plus_distr_r. reflexivity. Qed.

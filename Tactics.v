@@ -892,10 +892,13 @@ Fixpoint split {X Y : Type} (l : list (X*Y))
     sense: *)
 
 Theorem combine_split : forall X Y (l : list (X * Y)) l1 l2,
-  split l = (l1, l2) ->
-  combine l1 l2 = l.
+  split l = (l1, l2) -> combine l1 l2 = l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. unfold split in H. induction l1.
+  - induction l.
+    + reflexivity.
+    + rewrite <- IHl. simpl.
+      Admitted.
 (** [] *)
 
 (** However, [destruct]ing compound expressions requires a bit of
