@@ -562,19 +562,35 @@ Qed.
 Theorem iff_refl : forall P : Prop,
   P <-> P.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. split. intros. apply H. intros HP. apply HP. Qed.
 
 Theorem iff_trans : forall P Q R : Prop,
   (P <-> Q) -> (Q <-> R) -> (P <-> R).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. destruct H, H0. split.
+  intros Hp. apply H0, H, Hp. intro Hr. apply H1, H2, Hr. Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars (or_distributes_over_and)  *)
 Theorem or_distributes_over_and : forall P Q R : Prop,
   P \/ (Q /\ R) <-> (P \/ Q) /\ (P \/ R).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. split. intro H. destruct H.
+  - split.
+    + left. apply H.
+    + left. apply H.
+  - destruct H.
+    + split.
+      * right. apply H.
+      * right. apply H0.
+  - intro H. destruct H as [Hp [| Hq]].
+    + left. apply H.
+    + destruct Hp.
+      * left. apply H.
+      *  right. split. apply H. apply Hq.
+Qed.
+
+
 (** [] *)
 
 (** Some of Coq's tactics treat [iff] statements specially, avoiding
