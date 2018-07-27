@@ -690,7 +690,8 @@ Proof.
 Theorem dist_not_exists : forall (X:Type) (P : X -> Prop),
   (forall x, P x) -> ~ (exists x, ~ P x).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X m H Hp. destruct Hp as [x E]. unfold not in  E. apply E, H. Qed.
+
 (** [] *)
 
 (** **** Exercise: 2 stars (dist_exists_or)  *)
@@ -700,7 +701,12 @@ Proof.
 Theorem dist_exists_or : forall (X:Type) (P Q : X -> Prop),
   (exists x, P x \/ Q x) <-> (exists x, P x) \/ (exists x, Q x).
 Proof.
-   (* FILL IN HERE *) Admitted.
+  intros. split. intros. destruct H as [x [E | E]].
+  - left. exists x. apply E.
+  - right. exists x. apply E.
+  - intros [[x] | H]. exists x. left. apply H.
+    + destruct H as [x]. exists x. right. apply H.
+Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -724,7 +730,7 @@ Fixpoint In {A : Type} (x : A) (l : list A) : Prop :=
   match l with
   | [] => False
   | x' :: l' => x' = x \/ In x l'
-  end.
+
 
 (** When [In] is applied to a concrete list, it expands into a
     concrete sequence of nested disjunctions. *)
