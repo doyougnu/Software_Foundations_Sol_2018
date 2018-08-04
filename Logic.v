@@ -261,7 +261,7 @@ Theorem and_assoc : forall P Q R : Prop,
   P /\ (Q /\ R) -> (P /\ Q) /\ R.
 Proof.
   intros P Q R [HP [HQ HR]].
-  split. split. apply HP. apply HQ. apply HR.
+  split. split. apply HP. apply HQ. apply HR. Qed.
 (** [] *)
 
 (** By the way, the infix notation [/\] is actually just syntactic
@@ -730,7 +730,7 @@ Fixpoint In {A : Type} (x : A) (l : list A) : Prop :=
   match l with
   | [] => False
   | x' :: l' => x' = x \/ In x l'
-
+  end.
 
 (** When [In] is applied to a concrete list, it expands into a
     concrete sequence of nested disjunctions. *)
@@ -788,14 +788,39 @@ Lemma In_map_iff :
     In y (map f l) <->
     exists x, f x = y /\ In x l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros A B f l x.
+  - (* -> *)
+    intros. split.
+    + induction l as [|x' l' IHl'].
+      * (* [] *)
+        simpl. apply ex_falso_quodlibet.
+      * (* Cons *)
+        simpl. intros []. exists x'. split. apply H. left. reflexivity.
+        apply IHl' in H. inversion H. exists x0. split. apply H0. right. apply H0.
+    + induction l as [|x' l' IHl'].
+      * (* [] *)
+        simpl. intros. inversion H. apply H0.
+      * (* Cons *)
+        simpl. intros [x0 H]. destruct H. destruct H0. rewrite <- H0 in H.
+        left. apply H. right. apply IHl'. exists x0. split. apply H. apply H0.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars (In_app_iff)  *)
 Lemma In_app_iff : forall A l l' (a:A),
   In a (l++l') <-> In a l \/ In a l'.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction l as [].
+  - simpl. split.
+    + intros H. right. apply H.
+    + intros. destruct H. inversion H. apply H.
+  - simpl. split.
+    + intros H. destruct H. left. left. apply H.
+    apply or_assoc.  right. apply IHl, H.
+    + intros H. apply or_commut in H.
+      apply or_assoc in H. apply or_commut in H.
+      apply or_assoc in H. rewrite <- IHl in H. apply or_commut. apply H.
+      Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, recommended (All)  *)
