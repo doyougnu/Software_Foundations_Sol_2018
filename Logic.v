@@ -834,15 +834,29 @@ Proof.
     lemma below.  (Of course, your definition should _not_ just
     restate the left-hand side of [All_In].) *)
 
-Fixpoint All {T : Type} (P : T -> Prop) (l : list T) : Prop
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Fixpoint All {T : Type} (P : T -> Prop) (l : list T) : Prop :=
+  match l with
+    | [] => True
+    | x' :: l' => P x' /\ All P l'
+  end.
 
 Lemma All_In :
   forall T (P : T -> Prop) (l : list T),
     (forall x, In x l -> P x) <->
     All P l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. split.
+  - intros. induction l as [].
+    + simpl. apply True_is_true.
+    + simpl. split.
+      * apply H. simpl. left. reflexivity.
+      *  apply IHl. intros. apply H. simpl. right. apply H0.
+  - intros H x Q. induction l as [].
+    + simpl in H. simpl in Q. inversion Q.
+    + apply IHl.
+      * inversion H. apply H1.
+      * simpl in H. inversion H. simpl in Q. destruct Q. apply IHl in H1.
+        Admitted.
 (** [] *)
 
 (** **** Exercise: 3 stars (combine_odd_even)  *)
@@ -852,8 +866,8 @@ Proof.
     equivalent to [Podd n] when [n] is odd and equivalent to [Peven n]
     otherwise. *)
 
-Definition combine_odd_even (Podd Peven : nat -> Prop) : nat -> Prop
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition combine_odd_even (Podd Peven : nat -> Prop) : nat -> Prop :=
+  fun (x:nat) => (oddb x = true -> Podd x) \/ (oddb x = false -> Peven x).
 
 (** To test your definition, prove the following facts: *)
 
@@ -863,7 +877,7 @@ Theorem combine_odd_even_intro :
     (oddb n = false -> Peven n) ->
     combine_odd_even Podd Peven n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. unfold combine_odd_even. left. apply H. Qed.
 
 Theorem combine_odd_even_elim_odd :
   forall (Podd Peven : nat -> Prop) (n : nat),
@@ -871,6 +885,7 @@ Theorem combine_odd_even_elim_odd :
     oddb n = true ->
     Podd n.
 Proof.
+  intros. unfold combine_odd_even in  H.
   (* FILL IN HERE *) Admitted.
 
 Theorem combine_odd_even_elim_even :
@@ -977,6 +992,8 @@ Qed.
     hypotheses to a theorem as implicit by default.  These features
     are illustrated in the proof below. *)
 
+
+(* ASK ABOUT THIS IN GROUP!!! *)
 Example lemma_application_ex :
   forall {n : nat} {ns : list nat},
     In n (map (fun m => m * 0) ns) ->
@@ -987,6 +1004,12 @@ Proof.
            as [m [Hm _]].
   rewrite mult_0_r in Hm. rewrite <- Hm. reflexivity.
 Qed.
+
+Example testing := 3 < 4.
+
+Check testing.
+Print lt.
+Check leb.
 
 (** We will see many more examples of the idioms from this section in
     later chapters. *)
@@ -1115,7 +1138,7 @@ Definition tr_rev {X} (l : list X) : list X :=
     case.  Prove that the two definitions are indeed equivalent. *)
 
 Lemma tr_rev_correct : forall X, @tr_rev X = @rev X.
-(* FILL IN HERE *) Admitted.
+  Proof. Admitted.
 (** [] *)
 
 (* ================================================================= *)
@@ -1150,7 +1173,12 @@ Theorem evenb_double_conv : forall n,
                 else S (double k).
 Proof.
   (* Hint: Use the [evenb_S] lemma from [Induction.v]. *)
-  (* FILL IN HERE *) Admitted.
+  intros. induction n as [| n' IHn'].
+  - simpl. exists 0. reflexivity.
+  - rewrite evenb_S. destruct (evenb _).
+    + simpl. inversion IHn'. exists x. rewrite <- H. reflexivity.
+    + simpl. inversion IHn'. exists x. rewrite H.
+
 (** [] *)
 
 Theorem even_bool_prop : forall n,
@@ -1172,11 +1200,11 @@ Qed.
 
 Theorem beq_nat_true_iff : forall n1 n2 : nat,
   beq_nat n1 n2 = true <-> n1 = n2.
-Proof.
-  intros n1 n2. split.
-  - apply beq_nat_true.
-  - intros H. rewrite H. rewrite <- beq_nat_refl. reflexivity.
-Qed.
+Proof. Admitted.
+  (* intros n1 n2. split. *)
+  (* - apply beq_nat_true. *)
+  (* - intros H. rewrite H. Admitted. (*rewrite <- beq_nat_refl. reflexivity.*) *)
+(*Qed.*)
 
 (** However, even when the boolean and propositional formulations of a
     claim are equivalent from a purely logical perspective, they need
@@ -1268,12 +1296,27 @@ Proof. apply even_bool_prop. reflexivity. Qed.
 Lemma andb_true_iff : forall b1 b2:bool,
   b1 && b2 = true <-> b1 = true /\ b2 = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. destruct b1.
+  - simpl. split.
+    + intros. split. reflexivity. apply H.
+    + intros. inversion H. apply H1.
+  - simpl. split.
+    + intros. inversion H.
+    + intros. inversion H. inversion H0.
+Qed.
 
 Lemma orb_true_iff : forall b1 b2,
   b1 || b2 = true <-> b1 = true \/ b2 = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. destruct b1.
+  - simpl. split.
+    + intros. left. reflexivity.
+    + intros. reflexivity.
+  - simpl. split.
+    + intros. right. apply H.
+    + intros. destruct H. inversion H. apply H.
+Qed.
+
 (** [] *)
 
 (** **** Exercise: 1 star (beq_nat_false_iff)  *)
@@ -1283,8 +1326,7 @@ Proof.
 
 Theorem beq_nat_false_iff : forall x y : nat,
   beq_nat x y = false <-> x <> y.
-Proof.
-  (* FILL IN HERE *) Admitted.
+Proof. Admitted.
 (** [] *)
 
 (** **** Exercise: 3 stars (beq_list)  *)
