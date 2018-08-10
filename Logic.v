@@ -1177,7 +1177,8 @@ Proof.
   - simpl. exists 0. reflexivity.
   - rewrite evenb_S. destruct (evenb _).
     + simpl. inversion IHn'. exists x. rewrite <- H. reflexivity.
-    + simpl. inversion IHn'. exists x. rewrite H.
+    + simpl. inversion IHn'. exists (S x). simpl. rewrite H. reflexivity.
+      Qed.
 
 (** [] *)
 
