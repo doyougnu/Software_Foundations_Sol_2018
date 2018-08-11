@@ -276,7 +276,7 @@ Proof.
 Theorem SSSSev__even : forall n,
   ev (S (S (S (S n)))) -> ev n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.  inversion H. inversion H1. apply H3. Qed.
 (** [] *)
 
 (** **** Exercise: 1 star (even5_nonsense)  *)
@@ -285,7 +285,7 @@ Proof.
 Theorem even5_nonsense :
   ev 5 -> 2 + 2 = 9.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. apply evSS_ev in H. apply evSS_ev in H. inversion H. Qed.
 (** [] *)
 
 (** The way we've used [inversion] here may seem a bit
@@ -352,8 +352,9 @@ Proof.
                 (exists k, S (S n') = double k)).
     { intros [k' Hk']. rewrite Hk'. exists (S k'). reflexivity. }
     apply I. (* reduce the original goal to the new one *)
+    Admitted.
 
-Admitted.
+
 
 (* ================================================================= *)
 (** ** Induction on Evidence *)
@@ -411,7 +412,10 @@ Qed.
 (** **** Exercise: 2 stars (ev_sum)  *)
 Theorem ev_sum : forall n m, ev n -> ev m -> ev (n + m).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction H as [].
+  - simpl. apply H0.
+  - simpl. apply ev_SS, IHev. Qed.
+
 (** [] *)
 
 (** **** Exercise: 4 stars, advanced, optional (ev'_ev)  *)
@@ -430,7 +434,15 @@ Inductive ev' : nat -> Prop :=
 
 Theorem ev'_ev : forall n, ev' n <-> ev n.
 Proof.
- (* FILL IN HERE *) Admitted.
+  intros. split.
+  - intros H. induction H as [].
+    + apply ev_0.
+    + apply ev_SS, ev_0.
+    + apply ev_sum. apply IHev'1. apply IHev'2.
+  - intros H. induction H as [].
+    + apply ev'_0.
+    + apply (ev'_sum 2 n ev'_2 IHev). Qed.
+
 (** [] *)
 
 (** **** Exercise: 3 stars, advanced, recommended (ev_ev__ev)  *)
@@ -440,7 +452,8 @@ Proof.
 Theorem ev_ev__ev : forall n m,
   ev (n+m) -> ev n -> ev m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction H0. simpl in H. apply H.
+  - apply IHev. simpl in H. apply evSS_ev in H. apply H. Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (ev_plus_plus)  *)
@@ -451,7 +464,12 @@ Proof.
 Theorem ev_plus_plus : forall n m p,
   ev (n+m) -> ev (n+p) -> ev (m+p).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p H. apply ev_ev__ev. rewrite <- plus_assoc.
+  rewrite (plus_comm p (m + p)). rewrite <- plus_assoc.
+  rewrite (plus_assoc n _). apply ev_sum.
+  - apply H.
+  - apply ev_even_iff. exists p. rewrite double_plus. trivial. Qed.
+
 (** [] *)
 
 (* ################################################################# *)
