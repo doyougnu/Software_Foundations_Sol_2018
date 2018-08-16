@@ -557,14 +557,23 @@ Inductive next_even : nat -> nat -> Prop :=
 (** Define an inductive binary relation [total_relation] that holds
     between every pair of natural numbers. *)
 
-(* FILL IN HERE *)
+Inductive all_eq : nat -> nat -> Prop :=
+| eq : forall n m,  n = m -> all_eq n m
+| neqM : forall n m, n <> m -> all_eq n (S m)
+| neqN : forall n m, n <> m -> all_eq (S n) m.
 (** [] *)
+
+Lemma test : all_eq 4 6.
+Proof.
+  apply neqN. intros contra. inversion contra. Qed.
 
 (** **** Exercise: 2 stars, optional (empty_relation)  *)
 (** Define an inductive binary relation [empty_relation] (on numbers)
     that never holds. *)
 
-(* FILL IN HERE *)
+Inductive never_eq : nat -> nat -> Prop :=
+  | n0 : forall n m, never_eq n m
+  | n1 : forall n m, ev n /\ ev m -> never_eq (S n) (S m).
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (le_exercises)  *)
@@ -574,45 +583,77 @@ Inductive next_even : nat -> nat -> Prop :=
 
 Lemma le_trans : forall m n o, m <= n -> n <= o -> m <= o.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction H0.
+  - apply H.
+  - apply le_S. apply IHle. Qed.
 
 Theorem O_le_n : forall n,
   0 <= n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction n.
+  - trivial.
+  - apply le_S. apply IHn. Qed.
+
 
 Theorem n_le_m__Sn_le_Sm : forall n m,
   n <= m -> S n <= S m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction H.
+  - trivial.
+  -  apply le_S. apply IHle. Qed.
 
 Theorem Sn_le_Sm__n_le_m : forall n m,
   S n <= S m -> n <= m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction m as [].
+  - inversion H.
+    + trivial.
+    + inversion H1.
+  - inversion H.
+    + trivial.
+    + apply le_S. apply (IHm H1).
+Qed.
+
 
 Theorem le_plus_l : forall a b,
   a <= a + b.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. apply Sn_le_Sm__n_le_m. induction a as [].
+  -  simpl. induction b as [].
+     + trivial.
+     + apply le_S. apply IHb.
+  -  apply n_le_m__Sn_le_Sm. apply IHa.
+Qed.
 
 Theorem plus_lt : forall n1 n2 m,
   n1 + n2 < m ->
   n1 < m /\ n2 < m.
 Proof.
- unfold lt.
- (* FILL IN HERE *) Admitted.
+  intros. induction H as [].
+  -  split. assert (Q: n2 < S n2). Admitted.
+
 
 Theorem lt_S : forall n m,
   n < m ->
   n < S m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction m as [].
+  - inversion H.
+  - apply n_le_m__Sn_le_Sm. inversion H.
+    + apply le_S. trivial.
+    +  apply le_S. apply le_S in H1. inversion H1.
+       * trivial.
+       *  apply Sn_le_Sm__n_le_m. apply H1.
+Qed.
 
 Theorem leb_complete : forall n m,
   leb n m = true -> n <= m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m.  induction n as [].
+  - induction m as [].
+    + trivial.
+    + intros. apply le_S, IHm. trivial.
+  - Admitted.
 
 (** Hint: The next one may be easiest to prove by induction on [m]. *)
 
@@ -620,14 +661,17 @@ Theorem leb_correct : forall n m,
   n <= m ->
   leb n m = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction m as [].
+  - inversion H. trivial.
+  - simpl. Admitted.
 
 (** Hint: This theorem can easily be proved without using [induction]. *)
 
 Theorem leb_true_trans : forall n m o,
   leb n m = true -> leb m o = true -> leb n o = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  Admitted.
+
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (leb_iff)  *)
