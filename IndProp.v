@@ -559,21 +559,20 @@ Inductive next_even : nat -> nat -> Prop :=
 
 Inductive all_eq : nat -> nat -> Prop :=
 | eq : forall n m,  n = m -> all_eq n m
-| neqM : forall n m, n <> m -> all_eq n (S m)
-| neqN : forall n m, n <> m -> all_eq (S n) m.
+| neqN : forall n m, n >= m -> all_eq n m
+| neqM : forall n m, n <= m -> all_eq n m.
 (** [] *)
 
 Lemma test : all_eq 4 6.
 Proof.
-  apply neqN. intros contra. inversion contra. Qed.
+  apply neqM. apply le_S, le_S, le_n. Qed.
 
 (** **** Exercise: 2 stars, optional (empty_relation)  *)
 (** Define an inductive binary relation [empty_relation] (on numbers)
     that never holds. *)
 
 Inductive never_eq : nat -> nat -> Prop :=
-  | n0 : forall n m, never_eq n m
-  | n1 : forall n m, ev n /\ ev m -> never_eq (S n) (S m).
+  | n0 : forall n m, n > 0 -> never_eq (n + m) 0.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (le_exercises)  *)
