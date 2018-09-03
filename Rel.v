@@ -279,13 +279,24 @@ Definition antisymmetric {X: Type} (R: relation X) :=
   forall a b : X, (R a b) -> (R b a) -> a = b.
 
 (** **** Exercise: 2 stars, optional (le_antisymmetric)  *)
+Lemma Sn_le_n_false: forall n : nat, (S n) <= n -> False.
+  Proof.
+    intros.  induction n as [].
+    - inversion H.
+    - apply IHn. apply le_Sn_n in H. inversion H.
+  Qed.
+
+  (* WHY CANT WE FORWARD PROVE WITH LE_TRANS IN THE HYPOTHESIS??? *)
 Theorem le_antisymmetric :
   antisymmetric le.
 Proof.
-  unfold antisymmetric. intros.
-  inversion H.
+  unfold antisymmetric. intros. destruct H as [].
   - trivial.
-  - rewrite H2. apply (le_trans a b m H H1).
+  - assert (S m <= m) as Hn. {
+      apply le_trans with (S m). trivial. apply le_trans with a. apply H0. apply H.
+    } apply Sn_le_n_false in Hn. inversion Hn.
+Qed.
+
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (le_step)  *)
@@ -294,7 +305,11 @@ Theorem le_step : forall n m p,
   m <= S p ->
   n <= p.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. unfold lt in H. apply le_S_n. apply le_trans with m.
+  - apply H.
+  - apply H0.
+Qed.
+
 (** [] *)
 
 (* ----------------------------------------------------------------- *)
