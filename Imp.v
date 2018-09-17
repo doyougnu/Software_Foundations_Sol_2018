@@ -455,9 +455,11 @@ Theorem optimize_0plus_b_sound : forall b,
   beval (optimize_0plus_b b) = beval b.
 Proof.
   intros. induction b;
-            repeat (try (simpl; reflexivity)).
-  - induction a.
-    + Admitted.
+            repeat (try (simpl; reflexivity));
+  repeat (simpl; repeat (rewrite optimize_0plus_sound); reflexivity).
+  - simpl. rewrite IHb. reflexivity.
+  - simpl. rewrite IHb1. rewrite IHb2. reflexivity.
+Qed.
 
 (** [] *)
 
@@ -760,31 +762,6 @@ Qed.
 (** **** Exercise: 3 stars (bevalR)  *)
 (** Write a relation [bevalR] in the same style as
     [aevalR], and prove that it is equivalent to [beval].*)
-
-(* Fixpoint beval (b : bexp) : bool := *)
-(*   match b with *)
-(*   | BTrue       => true *)
-(*   | BFalse      => false *)
-(*   | BEq a1 a2   => beq_nat (aeval a1) (aeval a2) *)
-(*   | BLe a1 a2   => leb (aeval a1) (aeval a2) *)
-(*   | BNot b1     => negb (beval b1) *)
-(*   | BAnd b1 b2  => andb (beval b1) (beval b2) *)
-(*   end. *)
-
-
-(* Reserved Notation "e '\\' n" (at level 50, left associativity). *)
-
-(* Inductive aevalR : aexp -> nat -> Prop := *)
-(*   | E_ANum : forall (n:nat), *)
-(*       (ANum n) \\ n *)
-(*   | E_APlus : forall (e1 e2: aexp) (n1 n2 : nat), *)
-(*       (e1 \\ n1) -> (e2 \\ n2) -> (APlus e1 e2) \\ (n1 + n2) *)
-(*   | E_AMinus : forall (e1 e2: aexp) (n1 n2 : nat), *)
-(*       (e1 \\ n1) -> (e2 \\ n2) -> (AMinus e1 e2) \\ (n1 - n2) *)
-(*   | E_AMult :  forall (e1 e2: aexp) (n1 n2 : nat), *)
-(*       (e1 \\ n1) -> (e2 \\ n2) -> (AMult e1 e2) \\ (n1 * n2) *)
-
-(*   where "e '\\' n" := (aevalR e n) : type_scope. *)
 
 Reserved Notation "e '\\\' n" (at level 50, left associativity).
 
@@ -1395,7 +1372,12 @@ Example ceval_example2:
   (X ::= 0;; Y ::= 1;; Z ::= 2) / { --> 0 } \\
   { X --> 0 ; Y --> 1 ; Z --> 2 }.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  apply E_Seq with { X --> 0}.
+  - apply E_Ass. simpl. reflexivity.
+  - apply E_Seq with { X --> 0; Y --> 1}.
+    + apply E_Ass. simpl. reflexivity.
+    + apply E_Ass. simpl. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (pup_to_n)  *)
